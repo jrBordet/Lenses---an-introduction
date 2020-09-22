@@ -20,7 +20,7 @@ struct User {
 }
 
 extension User {
-    static var one = User(name: "One", address: .one)
+    static var one = User(name: "Me", address: .one)
 }
 
 struct Address {
@@ -50,7 +50,10 @@ let lensPersonName = Lens<User, String>(
 })
 
 let name = lensPersonName.get(.one)
-let newUser = lensPersonName.set("new user One", .one)
+let newUser = lensPersonName.set("mini Me", .one)
+
+dump(name)
+dump(newUser)
 
 let lensUserAddress = Lens<User, Address>(
     get: { $0.address},
@@ -70,6 +73,8 @@ let lensAddressBuilding = Lens<Address, Building?>(
     get: { $0.building },
     set: { Address(street: $1.street, city: $1.city, building: $0) }
 )
+
+dump(lensUserAddress.get(.one))
 
 // MARK: - Deep traverse
 
