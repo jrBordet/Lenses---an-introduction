@@ -1,5 +1,17 @@
 import UIKit
 
+/*
+# Table of Contents
+
+ * [Lens](lens)
+ 
+*/
+
+/*
+ 
+ # Lens
+ 
+ */
 public struct Lens <A, B> {
     let get: (A) -> B
     let set: (B, A) -> A
@@ -20,7 +32,7 @@ struct User {
 }
 
 extension User {
-    static var one = User(name: "Me", address: .one)
+    static var me = User(name: "Me", address: .one)
 }
 
 struct Address {
@@ -37,8 +49,6 @@ extension Address {
     static var one = Address(street: "Street 01", city: "NY", building: nil)
 }
 
-//Lens<User, String>(get: <#T##(User) -> String#>, set: <#T##(String, User) -> User#>)
-
 let lensPersonName = Lens<User, String>(
     get: { person in
         person.name
@@ -49,8 +59,8 @@ let lensPersonName = Lens<User, String>(
     )
 })
 
-let name = lensPersonName.get(.one)
-let newUser = lensPersonName.set("mini Me", .one)
+let name = lensPersonName.get(.me)
+let newUser = lensPersonName.set("mini Me", .me)
 
 dump(name)
 dump(newUser)
@@ -74,7 +84,7 @@ let lensAddressBuilding = Lens<Address, Building?>(
     set: { Address(street: $1.street, city: $1.city, building: $0) }
 )
 
-dump(lensUserAddress.get(.one))
+dump(lensUserAddress.get(.me))
 
 // MARK: - Deep traverse
 
@@ -95,7 +105,16 @@ func lensUserStreet(_ lhs: Lens<User, Address>, _ rhs: Lens<Address, String>) ->
     })
 }
 
-lensUserStreet(lensUserAddress, lensAddressStret).set("street update", .one)
+let streetUpdate = lensUserStreet(lensUserAddress, lensAddressStret).set("street update", .me)
+dump(streetUpdate)
+
+lensUserStreet(lensUserAddress, lensAddressStret).get(.me)
+
+// name: "Me"
+// address:
+//  street: "street update"
+//  city: "NY"
+//  building: nil
 
 // User.one.address.street = "street update"
 // User.one.address.street
@@ -124,10 +143,10 @@ let lensUserCity = compose(lensUserAddress, lensAddressCity)
 
 type(of: lensUserCity)
 
-lensUserCity.get(.one)
+lensUserCity.get(.me)
 lensAddressCity.set("new york city", .one)
 
-let composedUser = lensUserCity.set("new city", .one)
+let composedUser = lensUserCity.set("new city", .me)
 let newAddressOne = lensAddressBuilding.set(Building(id: 1), .one)
 
 // lhs: Lens<Address, String>
@@ -136,14 +155,14 @@ let newAddressOne = lensAddressBuilding.set(Building(id: 1), .one)
 
 let lensUserBuilding = compose(lensUserAddress, lensAddressBuilding)
 
-let a = lensUserBuilding.set(Building(id: 1), .one)
+let a = lensUserBuilding.set(Building(id: 1), .me)
 a.address.building?.id
 
 // MARK: - Over
 
 let lensUserCityCapitalized = lensUserCity.over { $0.capitalized }
 
-lensUserCityCapitalized(.one)
+lensUserCityCapitalized(.me)
 
 //- name: "One"
 //▿ address:
@@ -152,7 +171,7 @@ lensUserCityCapitalized(.one)
 //  - building: nil
 
 
-dump(lensUserCityCapitalized(.one))
+dump(lensUserCityCapitalized(.me))
 
 // MARK: - Forward composition
 
@@ -166,4 +185,4 @@ public func >>> <A, B, C> (
 }
 
 let _lensUserAddress = lensUserAddress >>> lensAddressStret
-_lensUserAddress.set("new address", .one)
+_lensUserAddress.set("new address", .me)
