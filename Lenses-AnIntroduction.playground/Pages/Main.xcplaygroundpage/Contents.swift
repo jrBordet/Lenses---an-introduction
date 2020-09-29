@@ -277,7 +277,10 @@ zip(lensAddressBuilding, zip(lensAddressCity, lensAddressStreet)).set((Building(
 
 zip2(lensAddressBuilding, lensAddressCity, lensAddressStreet).get(Address.one)
 
-let update = ("Zipped Me", Address(street: "Some street", city: "Turin", building: nil))
+let update = (
+    name: "new Me name",
+    address: Address(street: "Some street", city: "Turin", building: nil)
+)
 
 zip(lensUsernName, lensUserAddress).set(update, User.me)
 
